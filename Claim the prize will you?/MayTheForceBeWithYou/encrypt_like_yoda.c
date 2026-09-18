@@ -30,20 +30,19 @@ int main(int argc, char *argv[]) {
     fread(data, 1, size, in);
     fclose(in);
 
-    // Step 1: XOR each byte with repeating key
-    for (long i = 0; i < size; i++) {
-        data[i] ^= key[i % key_len];
-    }
-
-    // Step 2: Swap 4-byte blocks [A B C D] -> [C D A B]
+    // Step 1: Swap 4-byte blocks [A B C D] -> [C D A B]
     for (long i = 0; i + 3 < size; i += 4) {
         swap(&data[i+0], &data[i+2]);
         swap(&data[i+1], &data[i+3]);
     }
 
-    // Step 3: Swap every adjacent byte [x y] -> [y x]
+    // Step 2: Swap every adjacent byte [x y] -> [y x]
     for (long i = 0; i + 1 < size; i += 2) {
         swap(&data[i], &data[i+1]);
+    }
+    // Step 3: XOR each byte with repeating key
+    for (long i = 0; i < size; i++) {
+        data[i] ^= key[i % key_len];
     }
 
     FILE *out = fopen(argv[2], "wb");
